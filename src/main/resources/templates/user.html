@@ -1,0 +1,48 @@
+<!DOCTYPE HTML>
+<html style="text-align: center"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>user</title>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+</head>
+<body>
+<div th:switch="${user}">
+    <h2 th:case="null">No user yet!</h2>
+    <div th:case="*">
+        <img th:src="@{/images/10.jpg}" alt="user-nichosi" width="200" height="200" title="ничоси">
+        <h4>User</h4>
+        <table>
+            <thead>
+            <tr>
+                <th><i>Name</i></th>
+                <th>Password</th>
+                <th>Position</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>
+                    <mark>Role</mark>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user:${user}">
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.userPassword}"></td>
+                <td th:text="${user.position}"></td>
+                <td th:text="${user.age}"></td>
+                <td th:text="${user.email}"></td>
+                <td><span th:text="${#strings.arrayJoin(user.roles,', ')}"></span></td>
+            </tr>
+            </tbody>
+        </table>
+        <br>
+    </div>
+</div>
+<p>Выйти
+<form th:action="@{/logout}" method="post">
+    <input type="submit" value="Sign Out"/>
+</form>
+</body>
+</html>
