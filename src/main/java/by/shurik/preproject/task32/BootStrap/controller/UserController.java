@@ -9,16 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 public class UserController {
@@ -37,19 +33,18 @@ public class UserController {
         return new ModelAndView("user", "user", userService.findByUsername(authUser.getName()));
     }
 
-    @GetMapping("/admin/getAllUsers")
-    public ModelAndView getAllUsers() {
-        return new ModelAndView("welcome", "users", userService.listUser());
+    @RequestMapping(path = "/admin", method = RequestMethod.GET)
+    public ModelAndView getAdminPage() {
+        User authUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return new ModelAndView("admin", "user", userService.findByUsername(authUser.getName()));
     }
 
-    @GetMapping("/admin/welcome")
-    public String getWelcome(ModelMap modelMap,
-                             @RequestParam(value = "roleAdmin", required = false) String roleAdmin,//
-                             @RequestParam(value = "roleUser", required = false) String roleUser
-    ) {
-        modelMap.addAttribute("roleAdmin", roleAdmin);//кладем параметр roleAdmin в модель
-        modelMap.addAttribute("roleUser", roleUser);
-        return "redirect:/admin/getAllUsers";
+    @GetMapping({"/admin/welcome", "/admin/getAllUsers"})
+    public String getWelcome(Model model) {
+        User authUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        model.addAttribute("user", userService.findByUsername(authUser.getName()));
+        model.addAttribute("users", userService.listUser());
+        return "welcome";
     }
 
     @GetMapping("/admin/addUser")
@@ -59,41 +54,28 @@ public class UserController {
 
     @PostMapping("/admin/addUser")
     public String addUser(@Valid User user,
-                          //берем из формы параметр "roleAdmin", необязательный (false)
-                          @RequestParam(value = "roleAdmin", required = false) String roleAdmin,
-                          @RequestParam(value = "roleUser", required = false) String roleUser,
+                          @RequestParam(value = "allRoles[]", required = false) String[] allRoles,
                           BindingResult result) {
-        if (result.hasErrors()) {// если не прошел Valid - заново
+        if (result.hasErrors()) {
             return "addUser";
         }
-        Set<Role> roles = createRoleSet(roleAdmin, roleUser);//result
+        Set<Role> roles = createRoleSet(allRoles);//result
         user.setRoles(roles);
         userService.addUser(user);
         return "redirect:/admin/getAllUsers";
-    }
-
-    @GetMapping("/admin/edit/{id}")
-    public String showUpdateForm(@PathVariable("id") Long id, Model model) {
-        User user = userService.getUserById(id);//берем юзера из базы по id из юрла
-        Set<String> preRoles = new HashSet<>();//рыба ролей
-        user.getRoles().forEach(e -> preRoles.add(e.getName()));//кладем в рыбу каждую существующую роль юзера
-        model.addAttribute("user", user); // заносим из базы юзера
-        model.addAttribute("preRoles", preRoles);// отображаем в виде рыбу с ролями
-        return "updateUser";//отображаем форму для изма
     }
 
     @PostMapping("/admin/update/{id}")
     public String updateUser(@PathVariable("id") Long id,
                              @Valid User user,
                              BindingResult result,
-                             @RequestParam(value = "roleAdmin", required = false) String roleAdmin,
-                             @RequestParam(value = "roleUser", required = false) String roleUser) {
+                             @RequestParam(value = "allRoles[]", required = false) String[] allRoles) {
 
         if (result.hasErrors()) {
             user.setId(id);
-            return "updateUser";
+            return "admin/update";
         }
-        Set<Role> roles = createRoleSet(roleAdmin, roleUser);
+        Set<Role> roles = createRoleSet(allRoles);//result
         user.setRoles(roles);
         userService.updateUser(user);
         return "redirect:/admin/getAllUsers";
@@ -105,10 +87,8 @@ public class UserController {
         return "redirect:/admin/getAllUsers";
     }
 
-    private Set<Role> createRoleSet(String roleAdmin, String roleUser) {
-        Set<String> setRole = new HashSet<>();//preResult
-        setRole.add(roleAdmin);
-        setRole.add(roleUser);
+    private Set<Role> createRoleSet(String[] roleAdmin) {
+        Set<String> setRole = new HashSet<>(Arrays.asList(roleAdmin));//preResult
         setRole.removeIf(Objects::isNull);
         Set<Role> roles = new HashSet<>();
         Iterator<String> itr = setRole.iterator();
