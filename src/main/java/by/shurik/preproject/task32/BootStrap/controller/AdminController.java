@@ -30,7 +30,7 @@ public class AdminController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/admin/welcome")// сделать один адрес
+    @GetMapping("/admin/welcome")
     public String getWelcome(Model model) {
         User authUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         model.addAttribute("user", userService.findByUserEmail(authUser.getEmail()));
@@ -66,7 +66,7 @@ public class AdminController {
             user.setId(id);
             return "admin/update";
         }
-        Set<Role> roles = createRoleSet(allRoles);//result
+        Set<Role> roles = createRoleSet(allRoles);
         user.setRoles(roles);
         userService.updateUser(user);
         return "redirect:/admin/welcome";
@@ -78,13 +78,13 @@ public class AdminController {
         return "redirect:/admin/welcome";
     }
 
-    private Set<Role> createRoleSet(String[] roleAdmin) {
-        Set<String> setRole = new HashSet<>(Arrays.asList(roleAdmin));//preResult
-        setRole.removeIf(Objects::isNull);
+    private Set<Role> createRoleSet(String[] allRoles) {
         Set<Role> roles = new HashSet<>();
-        Iterator<String> itr = setRole.iterator();
-        while (itr.hasNext()) {
-            itr.forEachRemaining(roleName -> roles.add(roleService.getRoleByName(roleName)));
+        if (Arrays.asList(allRoles).contains(roleService.getRoleById(1L).getName())) {
+            roles.add(roleService.getRoleById(1L));
+        }
+        if (Arrays.asList(allRoles).contains(roleService.getRoleById(2L).getName())) {
+            roles.add(roleService.getRoleById(2L));
         }
         return roles;
     }
