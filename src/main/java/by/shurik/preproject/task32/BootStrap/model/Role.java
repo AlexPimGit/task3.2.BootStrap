@@ -17,9 +17,9 @@ public class Role implements GrantedAuthority {
     private Long id;
     @Column(name = "name", unique = true)
     private String name;
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
-//подумать зачем МтуМ, заменить
-    private Set<User> users = new HashSet<>();
+//    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
+////подумать зачем МтуМ, заменить
+//    private Set<User> users = new HashSet<>();
 
     public Role() {
     }
@@ -28,13 +28,13 @@ public class Role implements GrantedAuthority {
         this.name = name;
     }
 
-    public Set<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(Set<User> users) {
-        this.users = users;
-    }
+//    public Set<User> getUsers() {
+//        return users;
+//    }
+//
+//    public void setUsers(Set<User> users) {
+//        this.users = users;
+//    }
 
     public Long getId() {
         return id;

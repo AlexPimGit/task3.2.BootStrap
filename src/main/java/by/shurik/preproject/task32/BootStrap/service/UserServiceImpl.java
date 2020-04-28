@@ -60,8 +60,11 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     @Override
     public List<User> listUser() {
-
-        return userDao.listUser();
+        List<User> users = userDao.listUser();
+        for (User user : users) {
+            Hibernate.initialize(user.getRoles());
+        }
+        return users;
     }
 
     @Transactional(readOnly = true)
