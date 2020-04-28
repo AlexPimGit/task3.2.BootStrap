@@ -15,35 +15,7 @@ public class RoleDaoImpl implements RoleDao {
     @PersistenceContext
     private EntityManager entityManager;
 
-////    @Autowired
-//    public RoleDaoImpl(EntityManager entityManager) {
-//        this.entityManager = entityManager;
-//    }
-
-
     public RoleDaoImpl() {
-    }
-
-    @Override
-    public void addRole(Role role) {
-        entityManager.persist(role);//persist (добавление Entity под управление JPA)
-        LOGGER.log(Level.INFO, "Role successfully saved. Role details: " + role);
-    }
-
-    @Override
-    public void updateRole(Role role) {
-//        entityManager.update(role);
-        entityManager.refresh(role);
-        LOGGER.log(Level.INFO, "Role successfully updated. Role details: " + role);
-    }
-
-    @Override
-    public void removeRole(Long id) {
-        Role role = entityManager.find(Role.class, id);
-        if (role != null) {
-            entityManager.remove(role);
-        }
-        LOGGER.log(Level.INFO, "Role successfully deleted. Role details: " + role);
     }
 
     @Override
@@ -60,6 +32,12 @@ public class RoleDaoImpl implements RoleDao {
         String hql = "FROM Role role WHERE role.name= :name";
         Role role = (Role) entityManager.createQuery(hql).setParameter("name", name).getSingleResult();
         return role;
+    }
+
+    @Override
+    public Role getRoleById(Long id) {
+        String hql = "FROM Role role WHERE role.id= :id";
+        return (Role) entityManager.createQuery(hql).setParameter("id", id).getSingleResult();
     }
 }
 

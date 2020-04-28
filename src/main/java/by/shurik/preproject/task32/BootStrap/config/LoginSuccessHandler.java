@@ -3,7 +3,11 @@ package by.shurik.preproject.task32.BootStrap.config;
 
 import by.shurik.preproject.task32.BootStrap.model.Role;
 import by.shurik.preproject.task32.BootStrap.model.User;
+import by.shurik.preproject.task32.BootStrap.service.RoleService;
+import by.shurik.preproject.task32.BootStrap.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -12,23 +16,35 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 @Component
 public class LoginSuccessHandler implements AuthenticationSuccessHandler {
+    private RoleService roleService;
+
+    @Autowired
+    public LoginSuccessHandler(RoleService roleService) {
+        this.roleService = roleService;
+    }
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
                                         HttpServletResponse httpServletResponse,
-                                        Authentication authentication) throws IOException, ServletException {
-        User authUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        httpServletResponse.setStatus(HttpServletResponse.SC_OK);
-        Set<Role> roles = authUser.getRoles();
-        Role adminRole = new Role("ADMIN");
-        Role userRole = new Role("USER");
-        if (roles.contains(adminRole)) {
-            httpServletResponse.sendRedirect("/admin/welcome");
-        } else if (roles.contains(userRole)) {
-            httpServletResponse.sendRedirect("/user");
-        } else httpServletResponse.sendRedirect("/test");
+                                        Authentication authentication) throws IOException, ServletException { //взять роли из authentication
+        Collection<? extends GrantedAuthority> authorities
+                = authentication.getAuthorities();
+        for (GrantedAuthority grantedAuthority : authorities) {
+            if (grantedAuthority.getAuthority().equals((roleService.getRoleById(1L)).getName())) {
+                httpServletResponse.sendRedirect("/admin/welcome");
+                break;
+            } else if (grantedAuthority.getAuthority().equals((roleService.getRoleById(2L)).getName())) {
+                httpServletResponse.sendRedirect("/user");
+                break;
+            } else httpServletResponse.sendRedirect("/test");
+        }
     }
 }
+
+
+

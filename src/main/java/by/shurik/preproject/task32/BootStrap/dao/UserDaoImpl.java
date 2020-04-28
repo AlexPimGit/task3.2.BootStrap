@@ -16,18 +16,12 @@ public class UserDaoImpl implements UserDao {
     @PersistenceContext
     private EntityManager entityManager;//использовать entity менеджер без СпрингДата
 
-////    @Autowired
-//    public UserDaoImpl(EntityManager entityManager) {
-//        this.entityManager = entityManager;
-//    }
-
     public UserDaoImpl() {
     }
-
     //как в этих методах быть с исключениями??
     @Override
     public void addUser(User user) {
-        entityManager.persist(user);
+        entityManager.persist(user);//новую сущность persist - переводит её в состояние «управляемая» (managed)
         LOGGER.log(Level.INFO, "User successfully saved. User details: " + user);
     }
 
@@ -59,16 +53,6 @@ public class UserDaoImpl implements UserDao {
     public List<User> listUser() {
         List<User> userList = entityManager.createQuery("FROM User").getResultList();
         for (User user : userList) {
-            LOGGER.log(Level.INFO, "User list: " + user);
-        }
-        return userList;
-    }
-
-    @Override
-    public List findListByUsername(String filter) {
-        String hql = "FROM User user WHERE user.name= :name";
-        List userList = entityManager.createQuery(hql).getResultList();
-        for (Object user : userList) {
             LOGGER.log(Level.INFO, "User list: " + user);
         }
         return userList;

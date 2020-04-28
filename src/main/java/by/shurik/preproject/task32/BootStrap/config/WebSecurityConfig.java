@@ -1,5 +1,6 @@
 package by.shurik.preproject.task32.BootStrap.config;
 
+import by.shurik.preproject.task32.BootStrap.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private UserDetailsService userDetailsService;
     @Autowired
     private LoginSuccessHandler loginSuccessHandler;
+    @Autowired
+    private RoleService roleService;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -36,12 +39,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin()
                 // указываем страницу с формой логина
-                .loginPage("/login")
+                .loginPage("/login")//есть стандартная
                 // указываем action с формы логина (с jsp)
                 .loginProcessingUrl("/login")
                 .failureUrl("/login?error")
                 // Указываем параметры логина и пароля с формы логина
-                .usernameParameter("j_useremail")
+                .usernameParameter("j_useremail")//есть стандартные, которые можно не использовать
                 .passwordParameter("j_password")
                 // даем доступ к форме логина всем
                 .permitAll()
@@ -61,8 +64,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 // делаем страницу регистрации недоступной для авторизированных пользователей
                 .authorizeRequests()
-                .antMatchers("/admin/**").hasAuthority("ADMIN")
-                .antMatchers("/user/**").hasAnyAuthority("USER", "ADMIN")
+                .antMatchers("/admin/**").hasAuthority(roleService.getRoleById(1L).getName())
+                .antMatchers("/user/**").hasAnyAuthority(roleService.getRoleById(2L).getName(), roleService.getRoleById(2L).getName())
                 .antMatchers("/", "/home", "/403", "/test").permitAll()
                 //Все остальные страницы требуют аутентификации
                 .anyRequest().authenticated();

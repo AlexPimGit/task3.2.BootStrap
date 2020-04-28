@@ -30,7 +30,8 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @ManyToMany(fetch = FetchType.EAGER) // один юзер может иметь много ролей, одна роль может иметь много юзеров
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    // один юзер может иметь много ролей, одна роль может иметь много юзеров
     @JoinTable(name = "users_roles", // делаем таблицу связей для сущности юзер и сущности роль
             //FetchType.EAGER – «жадная» загрузка, т.е. список ролей загружается вместе с пользователем сразу (не ждет пока к нему обратятся)
             joinColumns = @JoinColumn(name = "user_id"),//добавляем колонку связи "user_id"

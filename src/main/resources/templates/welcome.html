@@ -146,18 +146,19 @@
                                                                                                type="text"
                                                                                                class="form-control"
                                                                                                id="nameInputEdit"
-                                                                                               th:placeholder="${user.name}"
                                                                                                name="name"
                                                                                                required>
                                                                                     </div>
                                                                                     <div class="form-group">
                                                                                         <label for="passwordInputEdit">Password</label>
-                                                                                        <input th:value="${user.password}"
+                                                                                        <input th:value ="${user.password}"
                                                                                                type="password"
                                                                                                class="form-control"
                                                                                                id="passwordInputEdit"
                                                                                                name="userPassword"
-                                                                                               required>
+                                                                                               th:placeholder="#{user.name}"
+
+                                                                                               >
                                                                                     </div>
                                                                                     <div class="form-group">
                                                                                         <label for="positionInputEdit">Position</label>
@@ -165,7 +166,6 @@
                                                                                                type="text"
                                                                                                class="form-control"
                                                                                                id="positionInputEdit"
-                                                                                               th:placeholder="${user.position}"
                                                                                                name="position"
                                                                                                required>
                                                                                     </div>
@@ -175,7 +175,6 @@
                                                                                                type="number"
                                                                                                class="form-control"
                                                                                                id="ageInputEdit"
-                                                                                               th:placeholder="${user.age}"
                                                                                                name="age"
                                                                                                required>
                                                                                     </div>
@@ -185,7 +184,6 @@
                                                                                                type="email"
                                                                                                class="form-control"
                                                                                                id="emailInputEdit"
-                                                                                               th:placeholder="${user.email}"
                                                                                                name="email"
                                                                                                required>
                                                                                     </div>

@@ -19,6 +19,4 @@ public interface UserDao {
     User findByUsername(String name);
 
     User findByUserEmail(String email);
-
-    List findListByUsername(String filter);
 }
