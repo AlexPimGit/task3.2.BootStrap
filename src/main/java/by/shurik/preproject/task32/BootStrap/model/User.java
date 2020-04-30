@@ -30,12 +30,11 @@ public class User implements UserDetails {
     @Column(name = "email")
     private String email;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade= {CascadeType.MERGE})
-    // один юзер может иметь много ролей, одна роль может иметь много юзеров
-    @JoinTable(name = "users_roles", // делаем таблицу связей для сущности юзер и сущности роль
-            //FetchType.EAGER – «жадная» загрузка, т.е. список ролей загружается вместе с пользователем сразу (не ждет пока к нему обратятся)
-            joinColumns = @JoinColumn(name = "user_id"),//добавляем колонку связи "user_id"
-            inverseJoinColumns = @JoinColumn(name = "role_id"))// добавляем колонку для обратной связи "role_id"
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
     public Set<Role> getRoles() {

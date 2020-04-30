@@ -1,6 +1,5 @@
 package by.shurik.preproject.task32.BootStrap.service;
 
-import by.shurik.preproject.task32.BootStrap.dao.RoleDao;
 import by.shurik.preproject.task32.BootStrap.dao.UserDao;
 import by.shurik.preproject.task32.BootStrap.model.User;
 import org.hibernate.Hibernate;
@@ -10,13 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-@Service
 @Transactional
-//не надо вызывать типовой код try entityManager / .begin();/.commit();/catch .rollback(); рекомендуется на каждый метод ставить (нет гибкости)
+@Service
 public class UserServiceImpl implements UserService {
     private UserDao userDao;
-    //@Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
@@ -24,7 +20,6 @@ public class UserServiceImpl implements UserService {
         this.userDao = userDao;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
-
 
     @Override
     public void addUser(User user) {
@@ -34,14 +29,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(User user) {
-        System.out.println("password = " + user.getUserPassword());
-
-        if (user.getUserPassword().startsWith("$") || user.getUserPassword().equals("")) {
-            user.setUserPassword(user.getPassword());
+        if (user.getPassword().startsWith("$") || user.getPassword().equals("")) {
+            user.setUserPassword(userDao.findByUserEmail(user.getEmail()).getPassword());
             userDao.updateUser(user);
-            System.out.println("password = " + user.getUserPassword());
         } else {
-            user.setUserPassword(bCryptPasswordEncoder.encode(user.getUserPassword()));
+            user.setUserPassword(bCryptPasswordEncoder.encode(user.getPassword()));
             userDao.updateUser(user);
         }
     }
@@ -51,13 +43,6 @@ public class UserServiceImpl implements UserService {
         userDao.removeUser(id);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public User getUserById(Long id) {
-        return userDao.getUserById(id);
-    }
-
-    @Transactional(readOnly = true)
     @Override
     public List<User> listUser() {
         List<User> users = userDao.listUser();
@@ -67,13 +52,12 @@ public class UserServiceImpl implements UserService {
         return users;
     }
 
-    @Transactional(readOnly = true)
+
     @Override
     public User findByUsername(String name) {
         return userDao.findByUsername(name);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public User findByUserEmail(String email) {
         User user = userDao.findByUserEmail(email);

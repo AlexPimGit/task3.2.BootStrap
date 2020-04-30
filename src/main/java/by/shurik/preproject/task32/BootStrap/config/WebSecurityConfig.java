@@ -38,41 +38,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.formLogin()
-                // указываем страницу с формой логина
-                .loginPage("/login")//есть стандартная
-                // указываем action с формы логина (с jsp)
+
+                .loginPage("/login")
                 .loginProcessingUrl("/login")
                 .failureUrl("/login?error")
-                // Указываем параметры логина и пароля с формы логина
-                .usernameParameter("j_useremail")//есть стандартные, которые можно не использовать
+                .usernameParameter("j_useremail")
                 .passwordParameter("j_password")
-                // даем доступ к форме логина всем
                 .permitAll()
-                //указываем логику обработки при логине
                 .successHandler(loginSuccessHandler);
         http.logout()
-                // разрешаем делать логаут всем
                 .permitAll()
-                // указываем URL логаута
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                // указываем URL при удачном логауте
                 .logoutSuccessUrl("/login?logout")
                 .and()
                 .exceptionHandling().accessDeniedPage("/403")
-                //выклчаем кроссдоменную секьюрность (на этапе обучения неважна)
                 .and().csrf().disable();
         http
-                // делаем страницу регистрации недоступной для авторизированных пользователей
                 .authorizeRequests()
                 .antMatchers("/admin/**").hasAuthority(roleService.getRoleById(1L).getName())
                 .antMatchers("/user/**").hasAnyAuthority(roleService.getRoleById(2L).getName(), roleService.getRoleById(2L).getName())
                 .antMatchers("/", "/home", "/403", "/test").permitAll()
-                //Все остальные страницы требуют аутентификации
                 .anyRequest().authenticated();
         http.httpBasic();
     }
 
-    //для отображения css на общедоступных страницах
     @Override
     public void configure(WebSecurity web) throws Exception {
         //Web resources

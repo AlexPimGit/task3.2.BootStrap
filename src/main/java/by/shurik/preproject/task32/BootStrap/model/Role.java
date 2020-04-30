@@ -2,11 +2,8 @@ package by.shurik.preproject.task32.BootStrap.model;
 
 import org.springframework.security.core.GrantedAuthority;
 
-
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -17,9 +14,6 @@ public class Role implements GrantedAuthority {
     private Long id;
     @Column(name = "name", unique = true)
     private String name;
-//    @ManyToMany(mappedBy = "roles", fetch = FetchType.EAGER)
-////подумать зачем МтуМ, заменить
-//    private Set<User> users = new HashSet<>();
 
     public Role() {
     }
@@ -27,14 +21,6 @@ public class Role implements GrantedAuthority {
     public Role(String name) {
         this.name = name;
     }
-
-//    public Set<User> getUsers() {
-//        return users;
-//    }
-//
-//    public void setUsers(Set<User> users) {
-//        this.users = users;
-//    }
 
     public Long getId() {
         return id;

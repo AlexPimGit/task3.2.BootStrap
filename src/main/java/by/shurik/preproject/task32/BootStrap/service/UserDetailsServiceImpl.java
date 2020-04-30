@@ -17,7 +17,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userService = userService;
     }
 
-    //UserDetails - то, что будет интерпретироваться системой как пользователь
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userService.findByUserEmail(username);

@@ -11,8 +11,6 @@ public interface UserService {
 
     void removeUser(Long id);
 
-    User getUserById(Long id);
-
     List<User> listUser();
 
     User findByUsername(String name);
